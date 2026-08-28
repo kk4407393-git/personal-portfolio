@@ -1,21 +1,19 @@
-/* =========================================
-   API URL
-========================================= */
+// ==========================================
+// API URL
+// ==========================================
 
-const API_URL = "http://localhost:5000/api";
+const API_URL = "https://personal-portfolio-1-t7z3.onrender.com/api";
 
 
-/* =========================================
-   MOBILE NAVIGATION
-========================================= */
+// ==========================================
+// MOBILE NAVIGATION
+// ==========================================
 
 const menuToggle = document.getElementById("menuToggle");
 const navLinks = document.getElementById("navLinks");
 
 if (menuToggle && navLinks) {
-
     menuToggle.addEventListener("click", () => {
-
         navLinks.classList.toggle("active");
 
         if (navLinks.classList.contains("active")) {
@@ -23,22 +21,17 @@ if (menuToggle && navLinks) {
         } else {
             menuToggle.textContent = "☰";
         }
-
     });
-
 }
 
 
-/* =========================================
-   CLOSE MOBILE MENU
-   WHEN A LINK IS CLICKED
-========================================= */
+// ==========================================
+// CLOSE MOBILE MENU
+// ==========================================
 
-const navigationLinks =
-    document.querySelectorAll(".nav-links a");
+const navigationLinks = document.querySelectorAll(".nav-links a");
 
 navigationLinks.forEach((link) => {
-
     link.addEventListener("click", () => {
 
         if (navLinks) {
@@ -48,15 +41,13 @@ navigationLinks.forEach((link) => {
         if (menuToggle) {
             menuToggle.textContent = "☰";
         }
-
     });
-
 });
 
 
-/* =========================================
-   FOOTER YEAR
-========================================= */
+// ==========================================
+// FOOTER YEAR
+// ==========================================
 
 const year = document.getElementById("year");
 
@@ -65,148 +56,126 @@ if (year) {
 }
 
 
-/* =========================================
-   CONTACT FORM
-========================================= */
+// ==========================================
+// CONTACT FORM
+// ==========================================
 
-const contactForm =
-    document.getElementById("contactForm");
-
-const formMessage =
-    document.getElementById("formMessage");
-
+const contactForm = document.getElementById("contactForm");
+const formMessage = document.getElementById("formMessage");
 
 if (contactForm) {
 
-    contactForm.addEventListener(
-        "submit",
-        async (event) => {
+    contactForm.addEventListener("submit", async (event) => {
 
-            event.preventDefault();
+        event.preventDefault();
 
-
-            const name =
-                document.getElementById("name").value.trim();
-
-            const email =
-                document.getElementById("email").value.trim();
-
-            const message =
-                document.getElementById("message").value.trim();
+        const name = document.getElementById("name").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const message = document.getElementById("message").value.trim();
 
 
-            /* Basic validation */
-
-            if (!name || !email || !message) {
-
-                formMessage.textContent =
-                    "Please fill in all fields.";
-
-                formMessage.style.color = "red";
-
-                return;
-            }
-
-
-            /* Email validation */
-
-            const emailPattern =
-                /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-
-            if (!emailPattern.test(email)) {
-
-                formMessage.textContent =
-                    "Please enter a valid email address.";
-
-                formMessage.style.color = "red";
-
-                return;
-            }
-
+        // Basic validation
+        if (!name || !email || !message) {
 
             formMessage.textContent =
-                "Sending message...";
+                "Please fill in all fields.";
 
-            formMessage.style.color = "#6c63ff";
+            formMessage.style.color = "red";
 
-
-            try {
-
-                const response = await fetch(
-                    `${API_URL}/contact`,
-                    {
-                        method: "POST",
-
-                        headers: {
-                            "Content-Type":
-                                "application/json"
-                        },
-
-                        body: JSON.stringify({
-                            name: name,
-                            email: email,
-                            message: message
-                        })
-                    }
-                );
+            return;
+        }
 
 
-                const data =
-                    await response.json();
+        // Email validation
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailPattern.test(email)) {
+
+            formMessage.textContent =
+                "Please enter a valid email address.";
+
+            formMessage.style.color = "red";
+
+            return;
+        }
 
 
-                if (response.ok) {
+        formMessage.textContent =
+            "Sending message...";
 
-                    formMessage.textContent =
-                        "Message sent successfully!";
+        formMessage.style.color = "#6c63ff";
 
-                    formMessage.style.color =
-                        "green";
 
-                    contactForm.reset();
+        try {
 
-                } else {
+            const response = await fetch(
+                `${API_URL}/contact`,
+                {
+                    method: "POST",
 
-                    formMessage.textContent =
-                        data.message ||
-                        "Something went wrong.";
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
 
-                    formMessage.style.color =
-                        "red";
+                    body: JSON.stringify({
+                        name: name,
+                        email: email,
+                        message: message
+                    })
                 }
+            );
 
 
-            } catch (error) {
+            const data = await response.json();
 
-                console.error(
-                    "Contact form error:",
-                    error
-                );
+
+            if (response.ok) {
 
                 formMessage.textContent =
-                    "Backend server is not running.";
+                    "Message sent successfully!";
 
-                formMessage.style.color =
-                    "red";
+                formMessage.style.color = "green";
+
+                contactForm.reset();
+
+            } else {
+
+                formMessage.textContent =
+                    data.message ||
+                    "Something went wrong.";
+
+                formMessage.style.color = "red";
             }
 
-        }
-    );
 
+        } catch (error) {
+
+            console.error(
+                "Contact form error:",
+                error
+            );
+
+            formMessage.textContent =
+                "Unable to connect to backend.";
+
+            formMessage.style.color = "red";
+        }
+
+    });
 }
 
 
-/* =========================================
-   LOAD PROJECTS FROM MONGODB
-========================================= */
+// ==========================================
+// LOAD PROJECTS FROM MONGODB
+// ==========================================
 
 async function loadProjects() {
 
     try {
 
         console.log(
-            "Loading projects from MongoDB..."
+            "Loading projects from:",
+            `${API_URL}/projects`
         );
 
 
@@ -220,12 +189,10 @@ async function loadProjects() {
             throw new Error(
                 `HTTP error: ${response.status}`
             );
-
         }
 
 
-        const projects =
-            await response.json();
+        const projects = await response.json();
 
 
         console.log(
@@ -256,20 +223,17 @@ async function loadProjects() {
             container.innerHTML = `
                 <p class="projects-error">
                     Unable to load projects.
-                    Please make sure the backend is running.
+                    Please try again later.
                 </p>
             `;
-
         }
-
     }
-
 }
 
 
-/* =========================================
-   DISPLAY PROJECTS
-========================================= */
+// ==========================================
+// DISPLAY PROJECTS
+// ==========================================
 
 function displayProjects(projects) {
 
@@ -289,13 +253,11 @@ function displayProjects(projects) {
     }
 
 
-    /* Clear existing hard-coded projects */
-
+    // Clear existing projects
     container.innerHTML = "";
 
 
-    /* Check whether projects exist */
-
+    // No projects
     if (!projects || projects.length === 0) {
 
         container.innerHTML = `
@@ -308,8 +270,7 @@ function displayProjects(projects) {
     }
 
 
-    /* Create project cards */
-
+    // Create project cards
     projects.forEach((project) => {
 
         const card =
@@ -320,7 +281,9 @@ function displayProjects(projects) {
             "project-card";
 
 
-        /* Technologies */
+        // ==========================================
+        // TECHNOLOGIES
+        // ==========================================
 
         const technologies =
             Array.isArray(project.technologies)
@@ -337,12 +300,13 @@ function displayProjects(projects) {
                 .join("");
 
 
-        /* Image */
+        // ==========================================
+        // IMAGE
+        // ==========================================
 
         const projectImage =
             project.image &&
             project.image.trim() !== ""
-
 
                 ? `
                     <img
@@ -351,7 +315,6 @@ function displayProjects(projects) {
                     >
                   `
 
-
                 : `
                     <div class="project-icon">
                         💻
@@ -359,12 +322,13 @@ function displayProjects(projects) {
                   `;
 
 
-        /* GitHub */
+        // ==========================================
+        // GITHUB LINK
+        // ==========================================
 
         const githubLink =
             project.githubUrl &&
             project.githubUrl !== "#"
-
 
                 ? `
                     <a
@@ -376,16 +340,16 @@ function displayProjects(projects) {
                     </a>
                   `
 
-
                 : "";
 
 
-        /* Live Demo */
+        // ==========================================
+        // LIVE DEMO LINK
+        // ==========================================
 
         const liveLink =
             project.liveUrl &&
             project.liveUrl !== "#"
-
 
                 ? `
                     <a
@@ -397,11 +361,12 @@ function displayProjects(projects) {
                     </a>
                   `
 
-
                 : "";
 
 
-        /* Complete project card */
+        // ==========================================
+        // PROJECT CARD
+        // ==========================================
 
         card.innerHTML = `
 
@@ -447,13 +412,12 @@ function displayProjects(projects) {
         container.appendChild(card);
 
     });
-
 }
 
 
-/* =========================================
-   LOAD PROJECTS WHEN PAGE LOADS
-========================================= */
+// ==========================================
+// LOAD PROJECTS WHEN PAGE LOADS
+// ==========================================
 
 document.addEventListener(
     "DOMContentLoaded",
