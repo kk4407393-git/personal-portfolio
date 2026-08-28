@@ -2,7 +2,7 @@
 // API URL
 // ==========================================
 
-const API_URL = "https://personal-portfolio-1-t7z3.onrender.com/api";
+const API_URL = "https://personal-portfolio-5-t7z3.onrender.com/api";
 
 
 // ==========================================
@@ -75,6 +75,7 @@ if (contactForm) {
 
 
         // Basic validation
+
         if (!name || !email || !message) {
 
             formMessage.textContent =
@@ -87,6 +88,7 @@ if (contactForm) {
 
 
         // Email validation
+
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         if (!emailPattern.test(email)) {
@@ -254,10 +256,12 @@ function displayProjects(projects) {
 
 
     // Clear existing projects
+
     container.innerHTML = "";
 
 
     // No projects
+
     if (!projects || projects.length === 0) {
 
         container.innerHTML = `
@@ -271,6 +275,7 @@ function displayProjects(projects) {
 
 
     // Create project cards
+
     projects.forEach((project) => {
 
         const card =
@@ -369,7 +374,6 @@ function displayProjects(projects) {
         // ==========================================
 
         card.innerHTML = `
-
             <div class="project-image">
 
                 ${projectImage}
@@ -405,7 +409,6 @@ function displayProjects(projects) {
                 </div>
 
             </div>
-
         `;
 
 
@@ -422,8 +425,6 @@ function displayProjects(projects) {
 document.addEventListener(
     "DOMContentLoaded",
     () => {
-
         loadProjects();
-
     }
 );

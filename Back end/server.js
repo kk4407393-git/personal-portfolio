@@ -17,11 +17,9 @@ app.use(cors());
 
 app.use(express.json());
 
-app.use(
-    express.urlencoded({
-        extended: true
-    })
-);
+app.use(express.urlencoded({
+    extended: true
+}));
 
 
 // ==========================================
@@ -29,10 +27,8 @@ app.use(
 // ==========================================
 
 app.get("/", (req, res) => {
-
     res.status(200).json({
-        message:
-            "Portfolio backend is running successfully",
+        message: "Portfolio backend is running successfully",
         status: "OK"
     });
 });
@@ -42,15 +38,8 @@ app.get("/", (req, res) => {
 // API ROUTES
 // ==========================================
 
-app.use(
-    "/api/projects",
-    projectRoutes
-);
-
-app.use(
-    "/api/contact",
-    contactRoutes
-);
+app.use("/api/projects", projectRoutes);
+app.use("/api/contact", contactRoutes);
 
 
 // ==========================================
@@ -58,7 +47,6 @@ app.use(
 // ==========================================
 
 app.use((req, res) => {
-
     res.status(404).json({
         message: "API route not found",
         path: req.originalUrl
@@ -70,47 +58,42 @@ app.use((req, res) => {
 // ERROR HANDLER
 // ==========================================
 
-app.use(
-    (err, req, res, next) => {
+app.use((err, req, res, next) => {
+    console.error("Server error:", err);
 
-        console.error(
-            "Server error:",
-            err
-        );
-
-        res.status(500).json({
-            message:
-                "Internal server error",
-            error: err.message
-        });
-    }
-);
+    res.status(500).json({
+        message: "Internal server error",
+        error: err.message
+    });
+});
 
 
 // ==========================================
 // PORT
 // ==========================================
 
-const PORT =
-    process.env.PORT || 5000;
+const PORT = process.env.PORT || 5000;
 
 
 // ==========================================
-// MONGODB
+// MONGODB URI
 // ==========================================
 
-const MONGODB_URI =
-    process.env.MONGODB_URI;
-
+const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
-
-    console.error(
-        "ERROR: MONGODB_URI is missing"
-    );
-
+    console.error("ERROR: MONGODB_URI is missing");
     process.exit(1);
 }
+
+
+// ==========================================
+// START SERVER
+// ==========================================
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
 
 
 // ==========================================
@@ -119,53 +102,14 @@ if (!MONGODB_URI) {
 
 mongoose
     .connect(MONGODB_URI)
-
     .then(() => {
-
-        console.log(
-            "================================="
-        );
-
-        console.log(
-            "MongoDB Atlas connected successfully"
-        );
-
-        console.log(
-            "================================="
-        );
-
-
-        // Start server AFTER MongoDB connects
-        app.listen(
-            PORT,
-            () => {
-
-                console.log(
-                    `Server running on port ${PORT}`
-                );
-
-            }
-        );
-
+        console.log("=================================");
+        console.log("MongoDB Atlas connected successfully");
+        console.log("=================================");
     })
-
     .catch((error) => {
-
-        console.error(
-            "================================="
-        );
-
-        console.error(
-            "MongoDB connection failed:"
-        );
-
-        console.error(
-            error.message
-        );
-
-        console.error(
-            "================================="
-        );
-
-        process.exit(1);
+        console.error("=================================");
+        console.error("MongoDB connection failed:");
+        console.error(error.message);
+        console.error("=================================");
     });
