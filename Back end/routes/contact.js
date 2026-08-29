@@ -1,97 +1,117 @@
 const express = require("express");
+const mongoose = require("mongoose");
+
 const router = express.Router();
 
-const Contact = require("../models/Contact");
+const Contact = require("../models/contact");
 
 // ==========================================
-// POST /api/contact - Save to MongoDB
+// TEST CONTACT API
+// GET /api/contact/test
+// ==========================================
+
+router.get("/test", (req, res) => {
+    res.status(200).json({
+        message: "Contact API is working"
+    });
+});
+
+// ==========================================
+// CREATE CONTACT MESSAGE
+// POST /api/contact
 // ==========================================
 
 router.post("/", async (req, res) => {
     try {
+        const { name, email, message } = req.body;
 
-        const name = req.body?.name
-            ? String(req.body.name).trim()
-            : "";
-
-        const email = req.body?.email
-            ? String(req.body.email).trim()
-            : "";
-
-        const message = req.body?.message
-            ? String(req.body.message).trim()
-            : "";
-
-
-        // ==========================================
-        // VALIDATE REQUIRED FIELDS
-        // ==========================================
-
+        // Validate required fields
         if (!name || !email || !message) {
             return res.status(400).json({
-                success: false,
-                message: "All fields (name, email, message) are required."
+                message: "Name, email and message are required"
             });
         }
 
-
-        // ==========================================
-        // VALIDATE EMAIL
-        // ==========================================
-
-        const emailPattern =
-            /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-        if (!emailPattern.test(email)) {
-            return res.status(400).json({
-                success: false,
-                message: "Please enter a valid email address."
-            });
-        }
-
-
-        // ==========================================
-        // SAVE TO MONGODB
-        // ==========================================
-
-        const newContact = new Contact({
-            name,
-            email,
-            message
+        const contact = new Contact({
+            name: name.trim(),
+            email: email.trim(),
+            message: message.trim()
         });
 
-        await newContact.save();
+        const savedContact = await contact.save();
 
-
-        console.log(
-            `✅ New message saved from: ${name} (${email})`
-        );
-
-
-        // ==========================================
-        // SUCCESS RESPONSE
-        // ==========================================
-
-        return res.status(200).json({
-            success: true,
-            message: "Your message has been sent successfully!"
+        res.status(201).json({
+            message: "Message sent successfully",
+            contact: savedContact
         });
-
 
     } catch (error) {
+        console.error("Error saving contact:", error);
 
-        console.error(
-            "❌ Contact route error:",
-            error.message
-        );
-
-        return res.status(500).json({
-            success: false,
-            message:
-                "Failed to save message. Please try again later."
+        res.status(500).json({
+            message: "Failed to send message",
+            error: error.message
         });
     }
 });
 
+// ==========================================
+// GET ALL CONTACT MESSAGES
+// GET /api/contact
+// ==========================================
+
+router.get("/", async (req, res) => {
+    try {
+        const contacts = await Contact
+            .find()
+            .sort({ createdAt: -1 });
+
+        res.status(200).json(contacts);
+
+    } catch (error) {
+        console.error("Error fetching contacts:", error);
+
+        res.status(500).json({
+            message: "Failed to fetch contact messages",
+            error: error.message
+        });
+    }
+});
+
+// ==========================================
+// DELETE CONTACT MESSAGE
+// DELETE /api/contact/:id
+// ==========================================
+
+router.delete("/:id", async (req, res) => {
+    try {
+        if (!mongoose.isValidObjectId(req.params.id)) {
+            return res.status(400).json({
+                message: "Invalid contact ID"
+            });
+        }
+
+        const deletedContact =
+            await Contact.findByIdAndDelete(req.params.id);
+
+        if (!deletedContact) {
+            return res.status(404).json({
+                message: "Contact message not found"
+            });
+        }
+
+        res.status(200).json({
+            message: "Contact message deleted successfully"
+        });
+
+    } catch (error) {
+        console.error("Error deleting contact:", error);
+
+        res.status(500).json({
+            message: "Failed to delete contact message",
+            error: error.message
+        });
+    }
+});
 
 module.exports = router;
